@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+
+# Android — secrets + build artifacts (match anywhere in the tree)
+local.properties
+.gradle/
+**/build/
+**/captures/
+.externalNativeBuild
+.cxx
+*.iml
+
+# IntelliJ / Android Studio
+**/.idea/caches/
+**/.idea/libraries/
+**/.idea/modules.xml
+**/.idea/workspace.xml
+**/.idea/navEditor.xml
+**/.idea/assetWizardSettings.xml
+
+# iOS — Xcode + SwiftPM build artifacts
+**/xcuserdata/
+**/DerivedData/
+**/.swiftpm/
+Supabase-Config.local.plist
+
+# Claude Code per-user state
+.claude

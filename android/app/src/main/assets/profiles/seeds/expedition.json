@@ -1,0 +1,57 @@
+{
+  "name": "Expedition",
+  "version": "1.0",
+  "display": {
+    "brightness": 0.15,
+    "dark_mode": true,
+    "grayscale": false,
+    "refresh_hz": 60,
+    "timeout_sec": 30
+  },
+  "radios": {
+    "airplane": false,
+    "wifi": false,
+    "cellular": false,
+    "force_lte": false,
+    "gps": true,
+    "bluetooth": true,
+    "nfc": false
+  },
+  "notifications": {
+    "dnd_enabled": true,
+    "allowlist_contacts": ["starred"],
+    "allowlist_apps": []
+  },
+  "background": {
+    "restrict_all_except": [],
+    "freeze_non_essential": true
+  },
+  "essential_apps": {
+    "categories": [],
+    "explicit_packages": [
+      "com.trailforks.android",
+      "com.garmin.android.apps.boating",
+      "com.garmin.android.apps.inreach",
+      "com.garmin.android.apps.explore",
+      "com.zoleo.app",
+      "com.findmespot.spot",
+      "com.bivy.app",
+      "com.spotify.music",
+      "com.google.android.apps.nbu.files",
+      "com.android.documentsui",
+      "com.adobe.reader",
+      "com.google.android.apps.docs",
+      "net.osmand",
+      "net.osmand.plus",
+      "com.trailbehind.android.gaiagps",
+      "com.alltrails.alltrails"
+    ]
+  },
+  "session": {
+    "duration_hours": null,
+    "auto_deactivate_at": null
+  },
+  "alarm": {
+    "enabled": false
+  }
+}

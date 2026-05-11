@@ -1,0 +1,62 @@
+{
+  "name": "Sport",
+  "version": "1.0",
+  "display": {
+    "brightness": 0.5,
+    "dark_mode": true,
+    "grayscale": false,
+    "refresh_hz": 60,
+    "timeout_sec": 60
+  },
+  "radios": {
+    "airplane": false,
+    "wifi": true,
+    "cellular": true,
+    "force_lte": false,
+    "gps": true,
+    "bluetooth": true,
+    "nfc": false
+  },
+  "notifications": {
+    "dnd_enabled": true,
+    "allowlist_contacts": ["starred"],
+    "allowlist_apps": []
+  },
+  "background": {
+    "restrict_all_except": [],
+    "freeze_non_essential": true
+  },
+  "essential_apps": {
+    "categories": [],
+    "explicit_packages": [
+      "com.google.android.apps.maps",
+      "com.google.android.apps.walletnfcrel",
+      "com.google.android.GoogleCamera",
+      "com.android.camera",
+      "com.android.camera2",
+      "com.google.android.apps.photos",
+      "com.whatsapp",
+      "com.facebook.orca",
+      "com.google.android.apps.nbu.files",
+      "com.android.documentsui",
+      "com.android.chrome",
+      "org.thoughtcrime.securesms",
+      "org.mozilla.firefox",
+      "com.google.android.apps.messaging",
+      "com.strava",
+      "com.garmin.android.apps.connectmobile",
+      "com.wahoofitness.support",
+      "com.komoot.android",
+      "com.ridewithgps.mobile",
+      "com.fitbit.FitbitMobile",
+      "com.spotify.music"
+    ]
+  },
+  "session": {
+    "duration_hours": 8,
+    "auto_deactivate_at": null
+  },
+  "alarm": {
+    "enabled": false
+  }
+}

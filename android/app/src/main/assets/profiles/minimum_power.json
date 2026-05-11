@@ -1,0 +1,40 @@
+{
+  "name": "Minimum Power",
+  "version": "1.0",
+  "display": {
+    "brightness": 0.05,
+    "dark_mode": true,
+    "grayscale": true,
+    "refresh_hz": 60,
+    "timeout_sec": 15
+  },
+  "radios": {
+    "airplane": false,
+    "wifi": false,
+    "cellular": true,
+    "force_lte": true,
+    "gps": false,
+    "bluetooth": false,
+    "nfc": false
+  },
+  "notifications": {
+    "dnd_enabled": true,
+    "allowlist_contacts": ["starred"],
+    "allowlist_apps": []
+  },
+  "background": {
+    "restrict_all_except": [],
+    "freeze_non_essential": true
+  },
+  "essential_apps": {
+    "categories": [],
+    "explicit_packages": []
+  },
+  "session": {
+    "duration_hours": null,
+    "auto_deactivate_at": null
+  },
+  "alarm": {
+    "enabled": false
+  }
+}
