@@ -27,11 +27,8 @@ const val URL_SETUP_VIDEO = "https://youtu.be/cpKqXyKN9k0"
  * GitHub releases page for the open-source build. Used by Settings → About →
  * "Verify this build" so users can match their installed APK against the
  * published SHA256.
- *
- * TODO: replace REPLACE_WITH_REAL_OWNER once the GitHub repo is published
- * (see project_thruspark_v05_open_source.md memory note for status).
  */
-const val URL_GITHUB_RELEASES = "https://github.com/REPLACE_WITH_REAL_OWNER/ExpeditionMode/releases"
+const val URL_GITHUB_RELEASES = "https://github.com/saneshiyer/ExpeditionMode/releases"
 
 /**
  * Inline "By creating an account..." consent text shown on SignUpScreen.
