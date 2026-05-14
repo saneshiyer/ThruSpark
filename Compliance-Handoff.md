@@ -195,7 +195,7 @@ Run through these BEFORE hitting submit on either store:
 - [ ] `thebikemechanic.ca/privacy` returns 200 and serves real policy content (not "coming soon")
 - [ ] `thebikemechanic.ca/terms` same
 - [ ] Privacy policy explicitly mentions: email storage with Supabase, account deletion path, data export path, contact email for privacy requests
-- [ ] App version (`versionCode` and `versionName` in `app/build.gradle.kts`) bumped from previous submission
+- [ ] App version (`versionCode` and `versionName` in `android/app/build.gradle.kts`) bumped from previous submission
 - [ ] APK / AAB built in `release` mode with ProGuard/R8 enabled
 - [ ] Tested on a real device that the release build installs and runs cleanly
 - [ ] Account deletion flow tested end-to-end against deployed Edge Function
