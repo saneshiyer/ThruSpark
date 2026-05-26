@@ -10,7 +10,7 @@ ThruSpark gives you one-tap access to system-level power controls — the same k
 
 ## Status
 
-**Paused as a product, published as a portfolio piece.** The app builds and runs on Android 11+ with all headline features implemented. There is no active roadmap, no Play Store listing, and no plan to pursue iOS in the near future. The source is here so it's auditable and forkable, and so I can point at it. Use at your own risk.
+**Paused as a product, published as a for those who are interested.** The app builds and runs on Android 11+ with all headline features implemented. There is no active roadmap, no Play Store listing, and no plan to pursue iOS in the near future. The source is here so it's auditable and forkable, and so I can point at it. Use at your own risk.
 
 ---
 
