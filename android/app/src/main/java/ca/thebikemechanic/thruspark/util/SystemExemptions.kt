@@ -152,7 +152,8 @@ object SystemExemptions {
         return result.stdout.lineSequence()
             .mapNotNull { line -> adminLineRegex.find(line)?.groupValues?.getOrNull(1) }
             .toSet()
-            .also { Log.d(TAG, "Found ${it.size} device admin package(s): $it") }
+            // Don't log device-admin package names — leaks enterprise MDM presence to logcat.
+            .also { Log.d(TAG, "Found ${it.size} device admin package(s)") }
     }
 
     private fun currentLauncher(context: Context): String? = runCatching {
