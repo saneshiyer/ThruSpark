@@ -14,6 +14,26 @@ ThruSpark gives you one-tap access to system-level power controls — the same k
 
 ---
 
+## Install
+
+Latest release: **[github.com/saneshiyer/ThruSpark/releases/latest](https://github.com/saneshiyer/ThruSpark/releases/latest)**
+
+ThruSpark is sideload-only — there's no Play Store listing. From your Android phone:
+
+1. Open the [latest release](https://github.com/saneshiyer/ThruSpark/releases/latest) and download `app-debug.apk`.
+2. Tap the downloaded APK. Android will ask you to enable "Install unknown apps" for whichever browser you used — toggle it on, hit back, tap the APK again.
+3. Play Protect may show "unrecognized app". Tap "Install anyway."
+
+That's the whole install. **Requires Android 11 or newer.**
+
+Every release publishes the SHA256 of the APK in its notes — you can compare the file you downloaded against that hash to confirm the binary matches the source you can read here. The in-app "Verify this build" button (Settings → About) opens this releases page.
+
+**Heads up on signing.** The APK is debug-signed rather than Play Store-signed because ThruSpark is a paused project — release-signing requires a keystore I'd have to maintain forever. Debug-signed installs cleanly via sideload; the only difference is the extra "unknown source" prompt above.
+
+To unlock the full feature set (airplane mode, refresh-rate caps, app suspension), also install [Shizuku](https://shizuku.rikka.app/) — ThruSpark's in-app onboarding walks you through it.
+
+---
+
 ## What it does
 
 | Feature | What it actually does |

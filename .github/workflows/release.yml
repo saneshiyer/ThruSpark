@@ -1,0 +1,76 @@
+name: Release
+
+# Builds a debug APK and attaches it to the GitHub Release matching a
+# pushed `v*` tag. If the release already exists (e.g. because v0.1.0 was
+# created by hand the first time), the workflow replaces the APK and
+# refreshes the notes with the latest SHA256.
+#
+# Manual release for reference:
+#   ./gradlew clean assembleDebug
+#   shasum -a 256 android/app/build/outputs/apk/debug/app-debug.apk
+#   gh release create vX.Y.Z android/app/.../app-debug.apk --notes "..."
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write  # required to create / edit releases
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew --no-daemon clean assembleDebug
+
+      - name: Compute SHA256 of APK
+        id: sha
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          SHA=$(sha256sum "$APK" | cut -d' ' -f1)
+          echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
+          echo "APK SHA256: $SHA"
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          TAG="${GITHUB_REF_NAME}"
+          NOTES=$(cat <<EOF
+          Debug-signed APK for ${TAG}.
+
+          **SHA256:** \`${{ steps.sha.outputs.sha256 }}\`
+
+          Compare this against the hash of the file you downloaded:
+          \`\`\`
+          shasum -a 256 app-debug.apk
+          \`\`\`
+
+          ThruSpark is a paused portfolio project; the APK is debug-signed rather than Play Store-signed. See the [README](https://github.com/${{ github.repository }}#install) for sideload instructions.
+          EOF
+          )
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG exists — uploading APK and refreshing notes."
+            gh release upload "$TAG" "$APK" --clobber
+            gh release edit "$TAG" --notes "$NOTES"
+          else
+            echo "Creating new release $TAG."
+            gh release create "$TAG" "$APK" --title "$TAG" --notes "$NOTES"
+          fi
