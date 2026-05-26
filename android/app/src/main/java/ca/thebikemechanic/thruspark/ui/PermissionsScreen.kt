@@ -94,19 +94,6 @@ private val PERMISSIONS = listOf(
     ),
 
     PermissionInfo(
-        category = "Account features",
-        display = "Internet",
-        manifest = "android.permission.INTERNET",
-        purpose = "Used only for sign-in / sign-up / password reset and to open the YouTube setup video. No data, profiles, or analytics are sent. See Settings → Network activity for the full audit log."
-    ),
-    PermissionInfo(
-        category = "Account features",
-        display = "Access Network State",
-        manifest = "android.permission.ACCESS_NETWORK_STATE",
-        purpose = "Lets the app check whether you're online before attempting an auth call, so we can show a clear error message offline."
-    ),
-
-    PermissionInfo(
         category = "App visibility",
         display = "Query launchable apps (<queries>)",
         manifest = "queries / intent / ACTION_MAIN+CATEGORY_LAUNCHER",

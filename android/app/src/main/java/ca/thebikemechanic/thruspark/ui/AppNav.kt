@@ -30,12 +30,12 @@ import ca.thebikemechanic.thruspark.data.UserPrefsStore
 import kotlinx.coroutines.launch
 
 /**
- * v0.1 nav graph. Three destinations live in the bottom bar (Modes, Alarms,
- * Settings). Builder is reachable from Modes; Auth and Shizuku setup are
- * reachable from Settings; the bottom bar hides on those secondary screens.
+ * Nav graph. Three destinations live in the bottom bar (Modes, Alarms,
+ * Settings). Builder is reachable from Modes; Shizuku setup is reachable
+ * from Settings; the bottom bar hides on secondary screens.
  *
- * Phase C wraps this whole graph in MainActivity's auth/walkthrough/perms
- * gating — this composable only mounts after the user is past first-launch.
+ * MainActivity gates this whole graph behind walkthrough + permissions —
+ * this composable only mounts after the user is past first-launch.
  */
 @Composable
 fun AppNav() {
@@ -92,18 +92,13 @@ fun AppNav() {
 
             composable(Routes.SETTINGS) {
                 SettingsScreen(
-                    onSignIn = { navController.navigate(Routes.AUTH) },
                     onManageShizuku = { navController.navigate(Routes.SHIZUKU_SETUP) },
-                    onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
-                    onOpenNetworkActivity = { navController.navigate(Routes.NETWORK_ACTIVITY) }
+                    onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) }
                 )
             }
 
             composable(Routes.PERMISSIONS) {
                 PermissionsScreen(onBack = { navController.popBackStack() })
-            }
-            composable(Routes.NETWORK_ACTIVITY) {
-                NetworkActivityScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Routes.BUILDER_NEW) {
@@ -130,16 +125,6 @@ fun AppNav() {
                 AppPickerScreen(
                     onDone = { navController.popBackStack() },
                     onCancel = { navController.popBackStack() }
-                )
-            }
-
-            composable(Routes.AUTH) {
-                // Reuses the same AuthFlow as first-launch. Both Continue and Skip
-                // just pop back to Settings — no need to mark auth_phase_done since
-                // it's already true by the time we're inside AppNav.
-                AuthFlow(
-                    onComplete = { navController.popBackStack() },
-                    onSkip = { navController.popBackStack() }
                 )
             }
 
@@ -237,11 +222,9 @@ private object Routes {
     const val SETTINGS = "settings"
     const val BUILDER_NEW = "builder"
     const val BUILDER_PREFIX = "builder"   // edit route: builder/{profileName}
-    const val AUTH = "auth"
     const val SHIZUKU_SETUP = "shizuku_setup"
     const val APP_PICKER = "app_picker"
     const val ALARM_EDIT_NEW = "alarm_edit"
     const val ALARM_EDIT_PREFIX = "alarm_edit"   // edit route: alarm_edit/{alarmId}
     const val PERMISSIONS = "permissions"
-    const val NETWORK_ACTIVITY = "network_activity"
 }

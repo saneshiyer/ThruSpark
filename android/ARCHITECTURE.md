@@ -16,7 +16,6 @@ app/
 │   └── java/ca/thebikemechanic/thruspark/
 │       ├── ThruSparkApp.kt             # Application class — initializes ShizukuManager
 │       ├── alarm/                      # AlarmManager-based wake-up alarms
-│       ├── auth/                       # Supabase email/password auth + token refresh
 │       ├── capability/                 # Two-tier capability providers (Standard, Shizuku)
 │       ├── data/                       # DataStore wrappers + profile JSON I/O
 │       ├── engine/                     # ProfileEngine — orchestrates activation/deactivation
@@ -30,7 +29,7 @@ app/
 │       └── util/                       # SystemExemptions + AppCategories + NotificationFilterState
 ```
 
-Each package has one or two responsibilities and minimal coupling to others. `ui/` depends on `model/`, `data/`, `auth/`, `engine/`, `shizuku/`, `util/` — never the reverse.
+Each package has one or two responsibilities and minimal coupling to others. `ui/` depends on `model/`, `data/`, `engine/`, `shizuku/`, `util/` — never the reverse.
 
 ---
 
@@ -154,54 +153,40 @@ Per-package state tracking: every package we suspend goes into `data/AppRestrict
 
 ---
 
-## 6. Auth (Supabase)
+## 6. Navigation
 
-`auth/SupabaseAuth.kt` is a thin OkHttp wrapper around Supabase's REST API. We deliberately avoid the Supabase Kotlin SDK to keep the dependency tree small (the SDK pulls in Ktor + 8 other modules).
-
-Persistence model: only the signed-in email is stored locally (`UserPrefsStore.signedInEmail`). JWTs are NOT persisted. Sensitive operations re-authenticate to obtain a fresh token (sensitive-action re-auth pattern, matches Google / Apple / GitHub).
-
-Auth is fully optional — the app's first-launch flow includes a "Skip" path. Everything except cloud sync (planned for a later version) works without an account.
-
-Account deletion calls a user-deployed Supabase Edge Function (`/functions/v1/delete-account`); see `Compliance-Handoff.md` for the deploy script.
-
----
-
-## 7. Navigation
-
-Single Compose-Nav graph in `ui/AppNav.kt`. Three bottom-nav destinations (Modes / Alarms / Settings) plus secondary destinations (Builder / Auth / Shizuku setup / App picker / Alarm edit / Permissions / Network activity).
+Single Compose-Nav graph in `ui/AppNav.kt`. Three bottom-nav destinations (Modes / Alarms / Settings) plus secondary destinations (Builder / Shizuku setup / App picker / Alarm edit / Permissions).
 
 The first-launch flow lives outside `AppNav` in `MainActivity`'s gating composable:
 
 ```
-auth phase done?    → no → AuthFlow (Welcome → Sign in / Sign up / Skip)
-walkthrough done?   → no → WalkthroughScreen (3 trust-focused slides)
+walkthrough done?   → no → WalkthroughScreen (trust-focused slides)
 permissions done?   → no → OnboardingScreen (system permission grants)
 shizuku setup done? → no → ShizukuOnboardingScreen (5-step guided walkthrough)
                           → AppNav (bottom-nav destinations)
 ```
 
-Each gate writes a `*_done` flag in `UserPrefsStore` so returning users skip ahead. Each gate is independently dismissable — skipping Shizuku doesn't block app usage; skipping auth doesn't block anything except cloud sync.
+Each gate writes a `*_done` flag in `UserPrefsStore` so returning users skip ahead. Each gate is independently dismissable — skipping Shizuku doesn't block app usage.
 
 ---
 
-## 8. Persistence layer
+## 7. Persistence layer
 
-Five DataStore-backed stores + one filesystem-backed store. All in `data/`:
+Four DataStore-backed stores + one filesystem-backed store. All in `data/`:
 
 | Store | What it holds | Backed by |
 |---|---|---|
 | `ProfileStateStore` | Active profile name, activated-at timestamp, isActive flag | DataStore |
-| `UserPrefsStore` | Onboarding flags, signed-in email, last-used profile | DataStore |
+| `UserPrefsStore` | Onboarding flags, last-used profile | DataStore |
 | `CustomProfileStore` | User-created profile JSON files | Filesystem (`filesDir/custom_profiles/*.json`) |
 | `AlarmEntryStore` | List of standalone alarms | DataStore (single JSON value) |
-| `NetworkActivityStore` | Last 50 network requests for the audit log | DataStore (single JSON value) |
 | `AppRestrictionsStore` | Packages currently suspended by the active profile | DataStore (CSV string) |
 
 `AppDataReset.kt` provides two reset levels: "restart onboarding" (clears just the flow flags) and "clear all data" (full nuclear).
 
 ---
 
-## 9. Background work
+## 8. Background work
 
 | Component | Trigger | Purpose |
 |---|---|---|
@@ -214,7 +199,7 @@ Five DataStore-backed stores + one filesystem-backed store. All in `data/`:
 
 ---
 
-## 10. Threading
+## 9. Threading
 
 Coroutines throughout. Three scopes in active use:
 - `viewModelScope` (Compose ViewModels) — UI-driven work
@@ -228,27 +213,22 @@ Coroutines throughout. Three scopes in active use:
 
 ---
 
-## 11. Testing strategy
+## 10. Testing strategy
 
 Honest current state: no automated tests. Validation has been on-device manual testing on a real Android phone (Pixel-class device).
 
-Planned for v0.6+:
-- Unit tests for `AppPauser` exemption resolution (deterministic, no Android dependency)
-- Unit tests for `AlarmScheduler.nextOccurrenceMillis` (date math, deterministic)
-- Instrumented tests for the navigation graph + first-launch gating flow
-
-The codebase is structured to make tests cheap to add — pure-Kotlin packages (`util/`, `model/`, parts of `data/`) are easily JVM-testable; Android-coupled packages (`alarm/`, `tile/`, `receiver/`) need Robolectric or instrumented tests.
+The codebase is structured to make tests cheap to add — pure-Kotlin packages (`util/`, `model/`, parts of `data/`) are easily JVM-testable; Android-coupled packages (`alarm/`, `tile/`, `receiver/`) need Robolectric or instrumented tests. Test dependencies (JUnit, Espresso, Compose UI test) are wired up in `build.gradle.kts` but no tests have been written.
 
 ---
 
-## 12. What's NOT in the architecture
+## 11. What's NOT in the architecture
 
 For the curious, things you might expect but won't find:
 
 - **No DI framework.** Hilt / Koin would be overkill at this scale. Constructors take what they need; ViewModels use `AndroidViewModel(application)` for context access.
 - **No event bus.** `StateFlow` carries all state changes that cross the ViewModel ↔ UI boundary. Cross-component signaling (e.g. ProfileEngine → NotificationFilterState) uses singleton state holders explicitly.
 - **No persistence framework / Room.** DataStore + JSON files are sufficient for the data shapes we have.
-- **No analytics SDK.** Deliberately. See `SECURITY.md`.
-- **No crash reporter.** Could add opt-in Sentry / Crashlytics in a later version; would be off by default and require user consent.
-- **No feature flags.** Single-channel app, ship to all users at the same time.
-- **No multi-module build.** One `:app` module. If iOS happens, the shared schema would justify a `:shared` Kotlin Multiplatform module — not before.
+- **No networking library.** The `INTERNET` permission isn't declared and no HTTP client is on the classpath. The app is fully offline by construction.
+- **No analytics SDK, no crash reporter.** Deliberately. See [`../SECURITY.md`](../SECURITY.md).
+- **No feature flags.** Single-channel app.
+- **No multi-module build.** One `:app` module — the scale doesn't justify more.

@@ -25,11 +25,11 @@ private val slides = listOf(
     ),
     Slide(
         "Why we use Shizuku",
-        "These power modes need permissions Android doesn't let regular apps grant themselves. Shizuku is a separate, free, open-source app that bridges that gap safely. Both ThruSpark and Shizuku are open-source and available on the Google Play Store, where Google Play Protect scans them for malware."
+        "These power modes need permissions Android doesn't let regular apps grant themselves. Shizuku is a separate, free, open-source app that bridges that gap safely. Both ThruSpark and Shizuku are open-source — the source for ThruSpark is on GitHub and you can audit, build, or fork it yourself."
     ),
     Slide(
         "Your data stays with you",
-        "By default ThruSpark works fully offline. Custom profiles, alarms, and settings stay in private storage on your device — protected by Android's full-disk encryption. If you sign in, only your email is sent off-device, and it's stored locally using Android's encrypted-key storage. Cloud sync between devices is optional and off by default."
+        "ThruSpark works fully offline. The app declares no network permission and makes no network calls — you can confirm this on the device's app info page. Custom profiles, alarms, and settings stay in private storage on your device, protected by Android's full-disk encryption. Nothing ever leaves your phone."
     )
 )
 
