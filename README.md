@@ -152,7 +152,7 @@ ThruSpark is provided under the [MIT License](LICENSE) — "as is", without warr
 
 Using Shizuku, app-suspension shell commands, and elevated power controls can affect how other apps behave on your device. Read [`SECURITY.md`](SECURITY.md) and the in-app permission explainer before granting permissions you're unsure about.
 
-This is a paused project and a portfolio piece. There is no support obligation and no guarantee of future updates.
+This is a personal project. There is no support obligation and no guarantee of future updates.
 
 ---
 
