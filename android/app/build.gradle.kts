@@ -1,20 +1,8 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
-
-// Read Supabase credentials from local.properties so they don't hit git
-val localProps = Properties().apply {
-    val f = rootProject.file("local.properties")
-    if (f.exists()) load(FileInputStream(f))
-}
-val supabaseUrl: String = localProps.getProperty("SUPABASE_URL", "")
-val supabaseAnonKey: String = localProps.getProperty("SUPABASE_ANON_KEY", "")
-val supabaseDeleteFunction: String = localProps.getProperty("SUPABASE_DELETE_FUNCTION", "delete-account")
 
 android {
     namespace = "ca.thebikemechanic.thruspark"
@@ -32,11 +20,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // BuildConfig.SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_DELETE_FUNCTION at runtime
-        buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
-        buildConfigField("String", "SUPABASE_DELETE_FUNCTION", "\"$supabaseDeleteFunction\"")
     }
 
     buildTypes {
@@ -56,7 +39,7 @@ android {
 
     buildFeatures {
         compose = true
-        buildConfig = true   // required (AGP 8+) to use buildConfigField
+        buildConfig = true
     }
 }
 
@@ -94,7 +77,7 @@ dependencies {
     // DataStore (profile state + user prefs persistence across reboots)
     implementation(libs.androidx.datastore.preferences)
 
-    // Kotlin serialization (parse profile JSON files + Supabase auth)
+    // Kotlin serialization (profile JSON, alarm storage, data export)
     implementation(libs.kotlinx.serialization.json)
 
     // Coroutines
@@ -104,15 +87,8 @@ dependencies {
     implementation(libs.shizuku.api)
     implementation(libs.shizuku.provider)
 
-    // OkHttp — Supabase REST calls (lighter than the full Supabase SDK)
-    implementation(libs.okhttp)
-
     // Material Components for XML themes (Theme.Material3.DayNight.NoActionBar)
     implementation(libs.google.android.material)
-
-    // EncryptedSharedPreferences (H3 fix) — at-rest encryption for signed-in
-    // email. Backed by Android Keystore; falls back gracefully if KS unavailable.
-    implementation(libs.androidx.security.crypto)
 
     // Tests
     testImplementation(libs.junit)

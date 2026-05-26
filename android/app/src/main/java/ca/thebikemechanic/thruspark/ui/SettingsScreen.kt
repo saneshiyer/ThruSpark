@@ -6,7 +6,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.clickable
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
@@ -26,24 +25,22 @@ import ca.thebikemechanic.thruspark.BuildConfig
 import ca.thebikemechanic.thruspark.shizuku.ShizukuState
 
 /**
- * Third bottom-nav tab. Three sections:
- *  - Account: signed-in status + sign in / sign out
+ * Third bottom-nav tab. Sections:
  *  - Shizuku: connection status + re-launch setup
+ *  - Background pausing: emergency restore
+ *  - Privacy & transparency: permissions explainer + data export
  *  - Reset: restart onboarding (keeps your data) OR full nuke (kills everything)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onSignIn: () -> Unit,
     onManageShizuku: () -> Unit,
     onOpenPermissions: () -> Unit = {},
-    onOpenNetworkActivity: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var confirmRestart by remember { mutableStateOf(false) }
     var confirmClearAll by remember { mutableStateOf(false) }
-    var confirmDeleteAccount by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) }
@@ -55,69 +52,6 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp)
         ) {
-            // ── Account ──────────────────────────────────────────────
-            SectionHeader("Account")
-            SettingCard {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.AccountCircle, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(40.dp))
-                    Spacer(Modifier.width(12.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        if (state.signedInEmail != null) {
-                            Text("Signed in as", style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text(state.signedInEmail!!, style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium)
-                        } else {
-                            Text("Not signed in", style = MaterialTheme.typography.bodyMedium)
-                            Text("Sync custom profiles between devices in a future version",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
-                }
-                Spacer(Modifier.height(12.dp))
-                if (state.signedInEmail != null) {
-                    OutlinedButton(onClick = { viewModel.signOut() }, modifier = Modifier.fillMaxWidth()) {
-                        Text("Sign out")
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { viewModel.exportData() },
-                        enabled = !state.exporting,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        if (state.exporting) CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp), strokeWidth = 2.dp
-                        ) else Text("Export my data")
-                    }
-                    state.exportError?.let { msg ->
-                        Spacer(Modifier.height(4.dp))
-                        AssistChip(onClick = { viewModel.dismissExportError() }, label = { Text(msg) })
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedButton(
-                        onClick = { confirmDeleteAccount = true },
-                        enabled = !state.deletingAccount,
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Delete account")
-                    }
-                } else {
-                    Button(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) {
-                        Text("Sign in or create account")
-                    }
-                }
-                Spacer(Modifier.height(12.dp))
-                LegalFooterLinks(modifier = Modifier.fillMaxWidth())
-            }
-
-            Spacer(Modifier.height(20.dp))
-
             // ── Shizuku ──────────────────────────────────────────────
             SectionHeader("Shizuku (Tier 2 capabilities)")
             SettingCard {
@@ -206,7 +140,7 @@ fun SettingsScreen(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "ThruSpark uses the network only for sign-in / account features and to open the setup video. Connections use standard Android system trust (HTTPS via OS-validated certificates; no certificate pinning). If you skipped account creation or signed out, you can deny network access entirely from system settings — the rest of the app keeps working.",
+                    "ThruSpark makes no network calls. The INTERNET permission is not declared in the app manifest — you can confirm via the system app info page below.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -229,12 +163,40 @@ fun SettingsScreen(
                 subtitle = "Plain-English explanation of every Android permission ThruSpark declares",
                 onClick = onOpenPermissions
             )
-            Spacer(Modifier.height(8.dp))
-            SettingNavRow(
-                title = "Network activity",
-                subtitle = "Audit log of every network call — you should mostly see nothing",
-                onClick = onOpenNetworkActivity
-            )
+
+            Spacer(Modifier.height(20.dp))
+
+            // ── Data ─────────────────────────────────────────────────
+            SectionHeader("Data")
+            SettingCard {
+                Text(
+                    "Export my data",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Share a JSON file containing your custom profiles and alarms. Nothing leaves the device unless you choose where to send it.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = { viewModel.exportData() },
+                    enabled = !state.exporting,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (state.exporting) CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp), strokeWidth = 2.dp
+                    ) else Text("Export my data")
+                }
+                state.exportError?.let { msg ->
+                    Spacer(Modifier.height(8.dp))
+                    AssistChip(onClick = { viewModel.dismissExportError() }, label = { Text(msg) })
+                }
+                Spacer(Modifier.height(12.dp))
+                LegalFooterLinks(modifier = Modifier.fillMaxWidth())
+            }
 
             Spacer(Modifier.height(20.dp))
 
@@ -248,7 +210,7 @@ fun SettingsScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Restart onboarding", style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium)
-                        Text("Re-walk Welcome → Walkthrough → Permissions → Shizuku. Custom profiles, alarm, and last-used selection are kept.",
+                        Text("Re-walk Walkthrough → Permissions → Shizuku. Custom profiles, alarms, and last-used selection are kept.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
@@ -271,7 +233,7 @@ fun SettingsScreen(
                         Text("Clear all data", style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.error)
-                        Text("Delete custom profiles, alarm, sign-out, deactivate active profile. Like a fresh install — but you don't lose the app itself.",
+                        Text("Delete custom profiles and alarms, deactivate active profile. Like a fresh install — but you don't lose the app itself.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
@@ -316,7 +278,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { confirmRestart = false },
             title = { Text("Restart onboarding?") },
-            text = { Text("You'll be sent back to the Welcome screen. Custom profiles, alarms, and your sign-in stay put.") },
+            text = { Text("You'll be sent back to the walkthrough. Custom profiles and alarms stay put.") },
             confirmButton = {
                 TextButton(onClick = {
                     confirmRestart = false
@@ -333,7 +295,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { confirmClearAll = false },
             title = { Text("Clear all data?") },
-            text = { Text("This deletes every custom profile, your alarm, signs you out, and stops any active mode. This can't be undone.") },
+            text = { Text("This deletes every custom profile, your alarms, and stops any active mode. This can't be undone.") },
             confirmButton = {
                 TextButton(onClick = {
                     confirmClearAll = false
@@ -347,77 +309,6 @@ fun SettingsScreen(
             }
         )
     }
-
-    if (confirmDeleteAccount) {
-        DeleteAccountDialog(
-            email = state.signedInEmail.orEmpty(),
-            errorMessage = state.deleteAccountError,
-            isDeleting = state.deletingAccount,
-            onConfirm = { password -> viewModel.deleteAccount(password) },
-            onDismiss = {
-                confirmDeleteAccount = false
-                viewModel.dismissDeleteError()
-            }
-        )
-    }
-}
-
-/**
- * Password re-prompt before account deletion. Sensitive-action re-auth pattern —
- * matches Google, Apple, etc. Shows the email being deleted, error inline.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DeleteAccountDialog(
-    email: String,
-    errorMessage: String?,
-    isDeleting: Boolean,
-    onConfirm: (password: String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var password by remember { mutableStateOf("") }
-    AlertDialog(
-        onDismissRequest = { if (!isDeleting) onDismiss() },
-        title = { Text("Delete account?") },
-        text = {
-            Column {
-                Text("This permanently deletes your account ($email) and all on-device data. This cannot be undone.")
-                Spacer(Modifier.height(12.dp))
-                Text("Enter your password to confirm.", style = MaterialTheme.typography.bodySmall)
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    singleLine = true,
-                    visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
-                    enabled = !isDeleting,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                errorMessage?.let { msg ->
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        msg,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirm(password) },
-                enabled = !isDeleting && password.isNotBlank()
-            ) {
-                if (isDeleting) CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp), strokeWidth = 2.dp
-                ) else Text("Delete account", color = MaterialTheme.colorScheme.error)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss, enabled = !isDeleting) { Text("Cancel") }
-        }
-    )
 }
 
 /**

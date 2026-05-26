@@ -12,9 +12,9 @@ private const val CUSTOM_PROFILE_DIR = "custom_profiles"
 /**
  * Two reset levels offered from Settings:
  *
- * 1. restartOnboarding() — clears the *_done flags + signed-in email so the
- *    user re-walks first-launch (Welcome → Walkthrough → Permissions → Shizuku).
- *    Custom profiles, alarm, and active state are preserved.
+ * 1. restartOnboarding() — clears the *_done flags so the user re-walks
+ *    first-launch (Walkthrough → Permissions → Shizuku). Custom profiles,
+ *    alarms, and active state are preserved.
  *
  * 2. clearAll() — full nuclear: deactivates active profile, wipes every
  *    DataStore, deletes every custom profile JSON, clears the SharedPrefs.
@@ -23,11 +23,9 @@ private const val CUSTOM_PROFILE_DIR = "custom_profiles"
 object AppDataReset {
 
     suspend fun restartOnboarding(context: Context) {
-        Log.d(TAG, "Restart onboarding — clearing flow flags and signed-in email")
+        Log.d(TAG, "Restart onboarding — clearing flow flags")
         runCatching { UserPrefsStore.clearAll(context) }
             .onFailure { Log.w(TAG, "UserPrefs clear failed", it) }
-        runCatching { SecureUserPrefs.clearAll(context) }
-            .onFailure { Log.w(TAG, "SecureUserPrefs clear failed", it) }
         clearOnboardingPrefs(context)
     }
 
@@ -38,9 +36,8 @@ object AppDataReset {
         runCatching { ProfileEngine.deactivateSuspend(context) }
             .onFailure { Log.w(TAG, "Profile deactivate during reset failed", it) }
 
-        // 2. Clear every DataStore + the EncryptedSharedPreferences-backed secure store
+        // 2. Clear every DataStore
         runCatching { UserPrefsStore.clearAll(context) }
-        runCatching { SecureUserPrefs.clearAll(context) }
         runCatching { AlarmEntryStore.clearAll(context) }
         runCatching { ProfileStateStore.clearAll(context) }
 

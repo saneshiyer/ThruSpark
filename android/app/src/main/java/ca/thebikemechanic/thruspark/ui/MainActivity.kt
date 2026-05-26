@@ -14,12 +14,11 @@ private const val PREFS_NAME = "thruspark_prefs"
 private const val KEY_ONBOARDING_DONE = "onboarding_complete"
 
 /**
- * v0.1 first-launch sequence (locked-in flow):
- *   1. AuthFlow (Welcome → Create / Sign in / Skip)  — auth_phase_done in prefs
- *   2. WalkthroughScreen (4 swipeable slides)        — walkthrough_done
- *   3. OnboardingScreen (system permissions)         — KEY_ONBOARDING_DONE
- *   4. ShizukuSetupScreen (skippable)                — shizuku_setup_done
- *   5. AppNav (Modes / Alarms tabs)
+ * First-launch sequence:
+ *   1. WalkthroughScreen (4 swipeable slides)        — walkthrough_done
+ *   2. OnboardingScreen (system permissions)         — KEY_ONBOARDING_DONE
+ *   3. ShizukuSetupScreen (skippable)                — shizuku_setup_done
+ *   4. AppNav (Modes / Alarms / Settings tabs)
  *
  * Returning users land directly on AppNav. Each gate is checked in order so a
  * user who skipped Shizuku once won't be re-prompted but also won't get stuck
@@ -35,18 +34,12 @@ class MainActivity : ComponentActivity() {
                 var permissionsDone by remember {
                     mutableStateOf(prefs.getBoolean(KEY_ONBOARDING_DONE, false))
                 }
-                val authDone by UserPrefsStore.authPhaseDoneFlow(this)
-                    .collectAsStateWithLifecycle(initialValue = false)
                 val walkthroughDone by UserPrefsStore.walkthroughDoneFlow(this)
                     .collectAsStateWithLifecycle(initialValue = false)
                 val shizukuDone by UserPrefsStore.shizukuSetupDoneFlow(this)
                     .collectAsStateWithLifecycle(initialValue = false)
 
                 when {
-                    !authDone -> AuthFlow(
-                        onComplete = { markAuthDone() },
-                        onSkip = { markAuthDone() }
-                    )
                     !walkthroughDone -> WalkthroughScreen(
                         onDone = { markWalkthroughDone() }
                     )
@@ -62,10 +55,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun markAuthDone() {
-        lifecycleScope.launch { UserPrefsStore.setAuthPhaseDone(this@MainActivity, true) }
     }
 
     private fun markWalkthroughDone() {

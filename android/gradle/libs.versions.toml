@@ -12,14 +12,12 @@ composeBom = "2026.02.01"
 # v0.1 additions
 navigationCompose = "2.7.7"
 shizuku = "13.1.5"
-okhttp = "4.12.0"
 kotlinxSerialization = "1.6.3"
 kotlinxCoroutines = "1.8.1"
 workManager = "2.9.0"
 datastore = "1.1.1"
 lifecycleViewmodelCompose = "2.7.0"
 material = "1.12.0"
-securityCrypto = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,9 +47,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku" }
 shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 google-android-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
