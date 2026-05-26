@@ -2,6 +2,7 @@ package ca.thebikemechanic.thruspark.shizuku
 
 import android.content.pm.PackageManager
 import android.util.Log
+import ca.thebikemechanic.thruspark.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -126,10 +127,22 @@ object ShizukuManager {
             val stdout = process.inputStream.bufferedReader().readText()
             val stderr = process.errorStream.bufferedReader().readText()
             ShellResult.Success(process.exitValue(), stdout, stderr).also {
-                Log.d(TAG, "exec '$command' → exit=${it.exitCode}")
+                // Don't log the full command — it includes package names of apps the user
+                // is suspending, which is sensitive on a shared / forensic-extracted device.
+                // Logcat is readable to ADB and to apps with READ_LOGS.
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "exec '$command' → exit=${it.exitCode}")
+                } else {
+                    Log.d(TAG, "exec → exit=${it.exitCode}")
+                }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "exec '$command' threw", e)
+            // Same reasoning — strip the command from the production log line.
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "exec '$command' threw", e)
+            } else {
+                Log.e(TAG, "exec threw: ${e.javaClass.simpleName}", e)
+            }
             ShellResult.Error(e.message ?: "unknown")
         }
     }

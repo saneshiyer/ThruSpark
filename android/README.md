@@ -85,4 +85,6 @@ MIT, see [`../LICENSE`](../LICENSE).
 
 ## Status
 
-Paused as a product, published as a portfolio piece. The app builds and runs on Android 11+; the headline features (profiles, app pausing, alarms, notification filtering) are all implemented and tested on a real device. No active roadmap.
+**Alpha prototype in testing — open to anyone to try, and we invite your comments!**
+
+The app builds and runs on Android 11+; the headline features (profiles, app pausing, alarms, notification filtering) are all implemented and tested on a real device. There's no Play Store listing yet. If you put it on a phone and try it, please [open an issue](https://github.com/saneshiyer/ThruSpark/issues) with feedback — bug reports, design notes, device-specific quirks all welcome.

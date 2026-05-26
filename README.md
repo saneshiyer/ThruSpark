@@ -10,7 +10,11 @@ ThruSpark gives you one-tap access to system-level power controls — the same k
 
 ## Status
 
-**Paused as a product, published as a for those who are interested.** The app builds and runs on Android 11+ with all headline features implemented. There is no active roadmap, no Play Store listing, and no plan to pursue iOS in the near future. The source is here so it's auditable and forkable, and so I can point at it. Use at your own risk.
+**Alpha prototype in testing — open to anyone to try, and we invite your comments!**
+
+The app builds and runs on Android 11+ with all headline features implemented. There's no Play Store listing yet and no plan to pursue iOS in the near future, but the Android build is real, sideloadable, and ready for you to put on a phone.
+
+If you try it, please [open an issue](https://github.com/saneshiyer/ThruSpark/issues) with what worked, what broke, and what felt off. Bug reports, design feedback, edge cases you ran into on your specific device — all welcome.
 
 ---
 
@@ -28,9 +32,15 @@ That's the whole install. **Requires Android 11 or newer.**
 
 Every release publishes the SHA256 of the APK in its notes — you can compare the file you downloaded against that hash to confirm the binary matches the source you can read here. The in-app "Verify this build" button (Settings → About) opens this releases page.
 
-**Heads up on signing.** The APK is debug-signed rather than Play Store-signed because ThruSpark is a paused project — release-signing requires a keystore I'd have to maintain forever. Debug-signed installs cleanly via sideload; the only difference is the extra "unknown source" prompt above.
+**Heads up on signing.** The APK is debug-signed rather than Play Store-signed — this is alpha-quality distribution, and release-signing requires a keystore commitment that doesn't make sense at this stage. Debug-signed installs cleanly via sideload; the only difference is the extra "unknown source" prompt above.
 
-To unlock the full feature set (airplane mode, refresh-rate caps, app suspension), also install [Shizuku](https://shizuku.rikka.app/) — ThruSpark's in-app onboarding walks you through it.
+To unlock the full feature set (airplane mode, refresh-rate caps, app suspension), also install [Shizuku](https://shizuku.rikka.app/) — ThruSpark's in-app onboarding walks you through it. There's a video walkthrough of the Shizuku setup below.
+
+### Setup video
+
+[![ThruSpark setup walkthrough](https://img.youtube.com/vi/cpKqXyKN9k0/maxresdefault.jpg)](https://www.youtube.com/watch?v=cpKqXyKN9k0)
+
+*Click to watch on YouTube — covers Shizuku install, wireless-debugging activation, and granting ThruSpark access.*
 
 ---
 
